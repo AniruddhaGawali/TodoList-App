@@ -104,11 +104,18 @@ class LoginState extends ConsumerState<Login> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Welcome Back",
+                  "Welcome Back To",
+                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                        color: Theme.of(context).colorScheme.secondary,
+                        fontSize: 20,
+                      ),
+                ),
+                Text(
+                  "TODO LIST",
                   style: Theme.of(context).textTheme.titleLarge!.copyWith(
                         color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.bold,
-                        fontSize: 30,
+                        fontSize: 45,
                       ),
                 ),
                 const SizedBox(height: 20),
