@@ -62,6 +62,19 @@ class Todo {
     }
   }
 
+  TodoStatus get getPreviousStatusName {
+    switch (status) {
+      case TodoStatus.open:
+        return TodoStatus.open;
+      case TodoStatus.working:
+        return TodoStatus.open;
+      case TodoStatus.done:
+        return TodoStatus.working;
+      case TodoStatus.overdue:
+        return TodoStatus.open;
+    }
+  }
+
   TodoStatus get getNextStatusName {
     switch (status) {
       case TodoStatus.open:

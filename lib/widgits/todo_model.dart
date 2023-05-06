@@ -5,26 +5,40 @@ import 'package:todolist/model/todo.dart';
 import 'package:intl/intl.dart';
 import 'package:todolist/widgits/tabletcontainer.dart';
 
-class TodoModel extends StatelessWidget {
+class TodoModel extends StatefulWidget {
   final Todo todo;
   const TodoModel({super.key, required this.todo});
+
+  @override
+  TodoModelState createState() => TodoModelState();
+}
+
+class TodoModelState extends State<TodoModel> {
+  late final ScaffoldMessengerState _scaffoldMessenger;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _scaffoldMessenger = ScaffoldMessenger.of(context);
+  }
 
   String _getCapitalizedText(String text) {
     return text[0].toUpperCase() + text.substring(1);
   }
 
-  void _changeStatus(context) async {
-    bool isSumbit = await todo.setNewStatus(todo.getNextStatusName);
+  void _changeStatus(TodoStatus status) async {
+    bool isSumbit = await widget.todo.setNewStatus(status);
     if (isSumbit) {
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(
+      _scaffoldMessenger.clearSnackBars();
+      _scaffoldMessenger.showSnackBar(
         SnackBar(
-            content: Text(
-                'Status Changed to ${_getCapitalizedText(todo.getNextStatusName.name)}')),
+          content:
+              Text('Status Changed to ${_getCapitalizedText(status.name)}'),
+        ),
       );
     } else {
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(
+      _scaffoldMessenger.clearSnackBars();
+      _scaffoldMessenger.showSnackBar(
         const SnackBar(content: Text('Status Not Changed')),
       );
     }
@@ -60,7 +74,7 @@ class TodoModel extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: Text(
-              todo.text,
+              widget.todo.text,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleLarge!.copyWith(
                     color: Theme.of(context).colorScheme.secondary,
@@ -70,7 +84,7 @@ class TodoModel extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           Text(
-            "Due Date: ${DateFormat("yyyy-MM-dd HH:mm:ss").format(todo.formatDueDate)}",
+            "Due Date: ${DateFormat("yyyy-MM-dd HH:mm:ss").format(widget.todo.formatDueDate)}",
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                   color: Theme.of(context).colorScheme.primary,
                   fontSize: 20,
@@ -86,16 +100,16 @@ class TodoModel extends StatelessWidget {
                     fontWeight: FontWeight.bold),
               ),
               TabletContainer(
-                  color: todo.getColor,
-                  textColor: todo.getColor.withOpacity(.8),
+                  color: widget.todo.getColor,
+                  textColor: widget.todo.getColor.withOpacity(.8),
                   text: _getCapitalizedText(
-                    todo.status.name,
+                    widget.todo.status.name,
                   )),
             ],
           ),
           const SizedBox(height: 20),
           Text(
-            todo.desc,
+            widget.todo.desc,
             style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                   color: Theme.of(context).colorScheme.secondary,
                   fontSize: 15,
@@ -107,14 +121,14 @@ class TodoModel extends StatelessWidget {
               TabletContainer(
                 textColor: Theme.of(context).colorScheme.primary,
                 text: _getCapitalizedText(
-                  'Owner: ${todo.owner[0]}',
+                  'Owner: ${widget.todo.owner[0]}',
                 ),
               ),
               const SizedBox(width: 5),
               TabletContainer(
                 textColor: Theme.of(context).colorScheme.primary,
                 text: _getCapitalizedText(
-                  'By: ${todo.name}',
+                  'By: ${widget.todo.name}',
                 ),
               ),
             ],
@@ -123,26 +137,45 @@ class TodoModel extends StatelessWidget {
           TabletContainer(
             textColor: Theme.of(context).colorScheme.primary,
             text: _getCapitalizedText(
-              'Send to: ${todo.sendTo}',
+              'Send to: ${widget.todo.sendTo}',
             ),
           ),
           const Spacer(),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20),
-            child: SlideAction(
-              innerColor: Theme.of(context).colorScheme.onPrimary,
-              outerColor: todo.getNextStatusColor.withOpacity(.7),
-              text: todo.getNextStatus,
-              elevation: 0,
-              sliderButtonIcon: Icon(
-                todo.getNextStatusIcon,
-                color: todo.getNextStatusColor.withOpacity(.7),
-              ),
-              sliderRotate: false,
-              onSubmit: () {
-                Navigator.pop(context);
-                _changeStatus(context);
-              },
+            padding: const EdgeInsets.only(bottom: 20),
+            child: Column(
+              children: [
+                widget.todo.status != TodoStatus.open
+                    ? SizedBox(
+                        width: double.infinity,
+                        child: TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            _changeStatus(widget.todo.getPreviousStatusName);
+                          },
+                          child: const Text("Go to Last Status"),
+                        ),
+                      )
+                    : const SizedBox(),
+                const SizedBox(
+                  height: 5,
+                ),
+                SlideAction(
+                  innerColor: Theme.of(context).colorScheme.onPrimary,
+                  outerColor: widget.todo.getNextStatusColor.withOpacity(.7),
+                  text: widget.todo.getNextStatus,
+                  elevation: 0,
+                  sliderButtonIcon: Icon(
+                    widget.todo.getNextStatusIcon,
+                    color: widget.todo.getNextStatusColor.withOpacity(.7),
+                  ),
+                  sliderRotate: false,
+                  onSubmit: () {
+                    Navigator.pop(context);
+                    _changeStatus(widget.todo.getNextStatusName);
+                  },
+                ),
+              ],
             ),
           )
         ]),
