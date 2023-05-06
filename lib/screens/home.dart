@@ -59,6 +59,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    ref.read(todoProvider.notifier).clear();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider);
     _getTasks(user, ref);

@@ -27,6 +27,10 @@ class TodoNotifier extends StateNotifier<List<Todo>> {
   void addTask(Todo todo) {
     state = [...state, todo];
   }
+
+  void clear() {
+    state = [];
+  }
 }
 
 final todoProvider = StateNotifierProvider<TodoNotifier, List<Todo>>(

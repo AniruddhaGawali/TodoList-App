@@ -12,14 +12,14 @@ import 'package:todolist/provider/user_data_provider.dart';
 import 'package:todolist/screens/home.dart';
 
 @immutable
-class Login extends ConsumerStatefulWidget {
-  const Login({Key? key}) : super(key: key);
+class LoginScreen extends ConsumerStatefulWidget {
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
   LoginState createState() => LoginState();
 }
 
-class LoginState extends ConsumerState<Login> {
+class LoginState extends ConsumerState<LoginScreen> {
   final _loginFormKey = GlobalKey<FormState>();
   static dynamic _loginId;
   static dynamic _loginPassword;
@@ -35,8 +35,8 @@ class LoginState extends ConsumerState<Login> {
   void _checkLogin() {
     if (_loginFormKey.currentState!.validate()) {
       _loginFormKey.currentState!.save();
+      _login(context);
     }
-    _login(context);
   }
 
   void _login(context) async {
@@ -71,6 +71,16 @@ class LoginState extends ConsumerState<Login> {
           builder: (BuildContext context) => const HomeScreen(),
         ),
       );
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text("Login Failed Wrong ID or Password"),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
     }
   }
 
@@ -83,6 +93,17 @@ class LoginState extends ConsumerState<Login> {
 
       _login(context);
     }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    setState(() {
+      _isLoading = false;
+      _rememberMe = false;
+      _loginId = null;
+      _loginPassword = null;
+    });
   }
 
   @override
@@ -146,7 +167,7 @@ class LoginState extends ConsumerState<Login> {
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return "Please enter your ID";
+                              return "Please enter your Password";
                             }
                             return null;
                           },

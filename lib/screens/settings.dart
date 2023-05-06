@@ -20,10 +20,12 @@ class SettingScreen extends ConsumerWidget {
             child: TextButton(
               onPressed: () {
                 ref.read(userProvider.notifier).logout();
-                Navigator.of(context).pop;
-                Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => const Login(),
-                ));
+                Navigator.of(context).pop();
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => const LoginScreen(),
+                  ),
+                );
               },
               child: const Text("Logout"),
             ),
