@@ -29,17 +29,17 @@ class LoginState extends ConsumerState<Login> {
   @override
   void initState() {
     super.initState();
-    _autoLogin();
+    _autoLogin(context);
   }
 
-  void _checkLogin() async {
+  void _checkLogin() {
     if (_loginFormKey.currentState!.validate()) {
       _loginFormKey.currentState!.save();
     }
-    _login();
+    _login(context);
   }
 
-  void _login() async {
+  void _login(context) async {
     setState(() {
       _isLoading = true;
     });
@@ -68,20 +68,20 @@ class LoginState extends ConsumerState<Login> {
 
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) => const HomeScreen(),
+          builder: (BuildContext context) => const HomeScreen(),
         ),
       );
     }
   }
 
-  void _autoLogin() async {
+  void _autoLogin(context) async {
     if (await ref.read(userProvider.notifier).loadUser()) {
       setState(() {
         _loginId = ref.read(userProvider).userID;
         _loginPassword = ref.read(userProvider).password;
       });
 
-      _login();
+      _login(context);
     }
   }
 

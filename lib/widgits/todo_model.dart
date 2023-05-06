@@ -13,6 +13,23 @@ class TodoModel extends StatelessWidget {
     return text[0].toUpperCase() + text.substring(1);
   }
 
+  void _changeStatus(context) async {
+    bool isSumbit = await todo.setNewStatus(todo.getNextStatusName);
+    if (isSumbit) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(
+                'Status Changed to ${_getCapitalizedText(todo.getNextStatusName.name)}')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Status Not Changed')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -122,22 +139,9 @@ class TodoModel extends StatelessWidget {
                 color: todo.getNextStatusColor.withOpacity(.7),
               ),
               sliderRotate: false,
-              onSubmit: () async {
-                bool isSumbit = await todo.setNewStatus(todo.getNextStatusName);
-                if (isSumbit) {
-                  ScaffoldMessenger.of(context).clearSnackBars();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text(
-                            'Status Changed to ${_getCapitalizedText(todo.getNextStatusName.name)}')),
-                  );
-                } else {
-                  ScaffoldMessenger.of(context).clearSnackBars();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Status Not Changed')),
-                  );
-                }
+              onSubmit: () {
                 Navigator.pop(context);
+                _changeStatus(context);
               },
             ),
           )
