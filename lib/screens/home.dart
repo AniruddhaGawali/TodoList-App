@@ -4,12 +4,14 @@ import 'dart:convert';
 //package files
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
+import 'package:todolist/Screens/login.dart';
 import 'package:todolist/model/user.dart';
 import 'package:todolist/model/todo.dart';
 
 //provider
 import 'package:todolist/provider/user_data_provider.dart';
 import 'package:todolist/provider/todo_provider.dart';
+import 'package:todolist/screens/settings.dart';
 import 'package:todolist/widgits/todolist.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -76,10 +78,9 @@ class HomeScreen extends ConsumerWidget {
             ),
             child: IconButton(
               onPressed: () {
-                ScaffoldMessenger.of(context).clearSnackBars();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Under Development'),
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const SettingScreen(),
                   ),
                 );
               },
@@ -89,6 +90,7 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
           ),
+          const SizedBox(width: 10),
         ],
       ),
       body: SingleChildScrollView(child: TodoList(todo: todos)),

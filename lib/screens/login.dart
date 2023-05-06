@@ -23,39 +23,65 @@ class LoginState extends ConsumerState<Login> {
   final _loginFormKey = GlobalKey<FormState>();
   static dynamic _loginId;
   static dynamic _loginPassword;
-
   bool _isLoading = false;
+  bool _rememberMe = false;
 
-  void _login(context, WidgetRef ref) async {
+  @override
+  void initState() {
+    super.initState();
+    _autoLogin();
+  }
+
+  void _checkLogin() async {
     if (_loginFormKey.currentState!.validate()) {
       _loginFormKey.currentState!.save();
+    }
+    _login();
+  }
 
+  void _login() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    http.Response result = await http.post(
+        Uri.parse('https://intelligent-gold-production.up.railway.app/login'),
+        body: {
+          'userID': _loginId,
+          'password': _loginPassword,
+        });
+
+    Map<String, dynamic> response = jsonDecode(result.body);
+
+    if (response['isSuccess'] == true) {
+      ref.read(userProvider.notifier).login(
+            response['name'],
+            _loginId,
+            _loginPassword,
+            response['isSuccess'],
+            response['userType'],
+          );
+
+      if (_rememberMe) {
+        ref.read(userProvider.notifier).saveUser();
+      }
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const HomeScreen(),
+        ),
+      );
+    }
+  }
+
+  void _autoLogin() async {
+    if (await ref.read(userProvider.notifier).loadUser()) {
       setState(() {
-        _isLoading = true;
+        _loginId = ref.read(userProvider).userID;
+        _loginPassword = ref.read(userProvider).password;
       });
 
-      http.Response result = await http.post(
-          Uri.parse('https://intelligent-gold-production.up.railway.app/login'),
-          body: {
-            'userID': _loginId,
-            'password': _loginPassword,
-          });
-
-      Map<String, dynamic> response = jsonDecode(result.body);
-
-      if (response['isSuccess'] == true) {
-        ref.read(userProvider.notifier).login(
-              response['name'],
-              response['isSuccess'],
-              response['userType'],
-            );
-
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const HomeScreen(),
-          ),
-        );
-      }
+      _login();
     }
   }
 
@@ -122,12 +148,23 @@ class LoginState extends ConsumerState<Login> {
                         const SizedBox(height: 20),
                         Row(
                           children: [
+                            Checkbox(
+                              value: _rememberMe,
+                              onChanged: (val) => setState(() {
+                                _rememberMe = val!;
+                              }),
+                            ),
+                            const Text("Remember Me")
+                          ],
+                        ),
+                        Row(
+                          children: [
                             Expanded(
                               child: SizedBox(
                                 width: double.infinity,
                                 child: ElevatedButton(
                                   onPressed: () {
-                                    _login(context, ref);
+                                    _checkLogin();
                                   },
                                   style: ButtonStyle(
                                     backgroundColor: MaterialStateProperty.all(
