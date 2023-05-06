@@ -9,13 +9,16 @@ class TodoList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(height: 30),
-        ...todos.map((todo) {
-          return TodoCard(todo: todo);
-        }).toList()
-      ],
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        children: [
+          const SizedBox(height: 30),
+          ...todos.map((todo) {
+            return TodoCard(todo: todo);
+          }).toList()
+        ],
+      ),
     );
   }
 }
