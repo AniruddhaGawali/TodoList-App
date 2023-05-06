@@ -4,15 +4,15 @@ import 'package:todolist/model/todo.dart';
 import 'package:todolist/widgits/todocard.dart';
 
 class TodoList extends StatelessWidget {
-  final List<Todo> todo;
-  const TodoList({super.key, required this.todo});
+  final List<Todo> todos;
+  const TodoList({super.key, required this.todos});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         const SizedBox(height: 30),
-        ...todo.map((todo) {
+        ...todos.map((todo) {
           return TodoCard(todo: todo);
         }).toList()
       ],

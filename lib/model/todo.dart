@@ -22,6 +22,19 @@ TodoStatus setStatus(String statusg, String dueDate) {
   return TodoStatus.open;
 }
 
+Color getColor(TodoStatus status) {
+  switch (status) {
+    case TodoStatus.open:
+      return Colors.blueAccent;
+    case TodoStatus.working:
+      return Colors.orangeAccent;
+    case TodoStatus.done:
+      return Colors.greenAccent;
+    case TodoStatus.overdue:
+      return Colors.redAccent;
+  }
+}
+
 class Todo {
   String id;
   String text;

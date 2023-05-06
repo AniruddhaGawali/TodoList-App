@@ -13,8 +13,19 @@ import 'package:todolist/provider/todo_provider.dart';
 import 'package:todolist/screens/settings.dart';
 import 'package:todolist/widgits/todolist.dart';
 
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  final List<TodoStatus> filter = [];
+
+  String _getCapitalizedText(String text) {
+    return text[0].toUpperCase() + text.substring(1);
+  }
 
   void _getTasks(User user, WidgetRef ref) async {
     late http.Response response;
@@ -34,11 +45,24 @@ class HomeScreen extends ConsumerWidget {
     ref.read(todoProvider.notifier).addAllTask(data['data']);
   }
 
+  List<Todo> get getFilteredTodo {
+    final List<Todo> todos = ref.watch(todoProvider);
+    if (filter.isEmpty) {
+      return todos;
+    } else {
+      return todos
+          .map((e) => filter.contains(e.status) ? e : null)
+          .where((element) => element != null)
+          .map((e) => e!)
+          .toList();
+    }
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final user = ref.watch(userProvider);
     _getTasks(user, ref);
-    final List<Todo> todos = ref.watch(todoProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -92,7 +116,48 @@ class HomeScreen extends ConsumerWidget {
           const SizedBox(width: 10),
         ],
       ),
-      body: SingleChildScrollView(child: TodoList(todo: todos)),
+      body: SingleChildScrollView(
+          child: Column(
+        children: [
+          const SizedBox(
+            height: 20,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ...TodoStatus.values.map((status) {
+                return OutlinedButton(
+                    style: ButtonStyle(
+                      overlayColor: MaterialStatePropertyAll(
+                          getColor(status).withOpacity(.3)),
+                      side: MaterialStatePropertyAll(
+                          BorderSide(color: getColor(status))),
+                      backgroundColor: MaterialStatePropertyAll(
+                        filter.contains(status)
+                            ? getColor(status).withOpacity(.3)
+                            : Colors.transparent,
+                      ),
+                      foregroundColor:
+                          MaterialStatePropertyAll(getColor(status)),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        if (filter.contains(status)) {
+                          filter.remove(status);
+                        } else {
+                          filter.add(status);
+                        }
+                      });
+                    },
+                    child: Text(
+                      _getCapitalizedText(status.name),
+                    ));
+              }).toList()
+            ],
+          ),
+          TodoList(todos: getFilteredTodo),
+        ],
+      )),
     );
   }
 }
