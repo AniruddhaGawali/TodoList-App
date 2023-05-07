@@ -22,6 +22,7 @@ class TodoCard extends StatelessWidget {
     showModalBottomSheet(
         context: context,
         useSafeArea: true,
+        isDismissible: true,
         enableDrag: true,
         isScrollControlled: true,
         backgroundColor: Colors.transparent,

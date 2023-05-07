@@ -110,12 +110,20 @@ class TodoModelState extends ConsumerState<TodoModel> {
             ],
           ),
           const SizedBox(height: 20),
-          Text(
-            widget.todo.desc,
-            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                  color: Theme.of(context).colorScheme.secondary,
-                  fontSize: 15,
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.32,
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                Text(
+                  widget.todo.desc,
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        color: Theme.of(context).colorScheme.secondary,
+                        fontSize: 15,
+                      ),
                 ),
+              ],
+            ),
           ),
           const SizedBox(height: 20),
           Row(
