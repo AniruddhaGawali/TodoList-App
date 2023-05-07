@@ -98,6 +98,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ],
         ),
       ),
+      floatingActionButton: ref.read(userProvider).isSuperUser
+          ? FloatingActionButton(
+              onPressed: () {
+                ScaffoldMessenger.of(context).clearSnackBars();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Under Development'),
+                  ),
+                );
+              },
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+              disabledElevation: 0,
+              child: Icon(
+                Icons.add,
+                size: 35,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            )
+          : null,
       drawer: const CustomDrawer(),
     );
   }

@@ -17,7 +17,6 @@ class FilterNotifier extends StateNotifier<List<TodoStatus>> {
   }
 
   void clear() {
-    print('back');
     state = [];
   }
 
