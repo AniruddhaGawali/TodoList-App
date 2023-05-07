@@ -10,7 +10,7 @@ import 'package:todolist/provider/fliter_provider.dart';
 import 'package:todolist/provider/todo_provider.dart';
 
 class RoleTaskScreen extends ConsumerWidget {
-  final UserType role;
+  final String role;
   const RoleTaskScreen({
     super.key,
     required this.role,
@@ -27,28 +27,45 @@ class RoleTaskScreen extends ConsumerWidget {
     List<Todo> todos = ref.watch(filterProvider.notifier).getFilteredTodos(ref
         .watch(todoProvider)
         .where(
-          (element) => element.sendTo.contains(role.name.toUpperCase()),
+          (element) => element.sendTo.contains(role),
         )
         .toList());
 
     return WillPopScope(
       child: Scaffold(
         appBar: AppBar(
-          title: Text(_getCapterlised(role.name)),
+          title: Text(_getCapterlised(role)),
         ),
         body: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(
-                height: 20,
-              ),
-              const FilterButtons(),
-              TodoList(
-                  todos: ref
-                      .read(filterProvider.notifier)
-                      .getFilteredTodos(todos)),
-            ],
-          ),
+          child: todos.isNotEmpty
+              ? Column(
+                  children: [
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    const FilterButtons(),
+                    TodoList(
+                        todos: ref
+                            .read(filterProvider.notifier)
+                            .getFilteredTodos(todos)),
+                  ],
+                )
+              : Center(
+                  child: Column(children: [
+                    Image.network(
+                        "https://img.freepik.com/free-vector/relaxing-home-concept-illustration_114360-1128.jpg?w=1480&t=st=1683480421~exp=1683481021~hmac=dc5360c1d18af237acf74b1086762e0f57c19a0c93161adf51597426d4e2c441"),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      'No Tasks Take a Break',
+                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                  ]),
+                ),
         ),
       ),
       onWillPop: () async {

@@ -91,6 +91,27 @@ class CustomDrawer extends ConsumerWidget {
                 color: Colors.black,
                 thickness: 1,
               ),
+              ListTile(
+                leading: Icon(
+                  Icons.person,
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                ),
+                title: Text(
+                  'Your Tasks',
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelLarge!
+                      .copyWith(fontSize: 18),
+                ),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (BuildContext context) {
+                    return RoleTaskScreen(
+                        role: ref.read(userProvider).username);
+                  }));
+                },
+              ),
               ref.read(userProvider).isSuperUser
                   ? Column(
                       children: [
@@ -114,7 +135,8 @@ class CustomDrawer extends ConsumerWidget {
                               Navigator.of(context).pop();
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (BuildContext context) {
-                                return RoleTaskScreen(role: usertype);
+                                return RoleTaskScreen(
+                                    role: usertype.name.toUpperCase());
                               }));
                             },
                           );
@@ -144,7 +166,8 @@ class CustomDrawer extends ConsumerWidget {
                               await Navigator.of(context).push(
                                 MaterialPageRoute(
                                     builder: (BuildContext context) {
-                                  return RoleTaskScreen(role: usertype);
+                                  return RoleTaskScreen(
+                                      role: usertype.name.toUpperCase());
                                 }),
                               );
                             },
