@@ -149,6 +149,7 @@ class LoginState extends ConsumerState<LoginScreen> {
                         ),
                         const SizedBox(height: 20),
                         TextFormField(
+                          obscureText: true,
                           decoration: InputDecoration(
                             labelText: "Password",
                             border: OutlineInputBorder(
