@@ -96,17 +96,6 @@ class LoginState extends ConsumerState<LoginScreen> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-    setState(() {
-      _isLoading = false;
-      _rememberMe = false;
-      _loginId = null;
-      _loginPassword = null;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     if (_isLoading) {
       return const Scaffold(

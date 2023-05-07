@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:slide_to_act/slide_to_act.dart';
 import 'package:todolist/model/todo.dart';
 
 import 'package:intl/intl.dart';
+import 'package:todolist/provider/user_data_provider.dart';
 import 'package:todolist/widgits/tabletcontainer.dart';
 
-class TodoModel extends StatefulWidget {
+class TodoModel extends ConsumerStatefulWidget {
   final Todo todo;
   const TodoModel({super.key, required this.todo});
 
@@ -13,7 +15,7 @@ class TodoModel extends StatefulWidget {
   TodoModelState createState() => TodoModelState();
 }
 
-class TodoModelState extends State<TodoModel> {
+class TodoModelState extends ConsumerState<TodoModel> {
   late final ScaffoldMessengerState _scaffoldMessenger;
 
   @override
@@ -160,21 +162,26 @@ class TodoModelState extends State<TodoModel> {
                 const SizedBox(
                   height: 5,
                 ),
-                SlideAction(
-                  innerColor: Theme.of(context).colorScheme.onPrimary,
-                  outerColor: widget.todo.getNextStatusColor.withOpacity(.7),
-                  text: widget.todo.getNextStatus,
-                  elevation: 0,
-                  sliderButtonIcon: Icon(
-                    widget.todo.getNextStatusIcon,
-                    color: widget.todo.getNextStatusColor.withOpacity(.7),
-                  ),
-                  sliderRotate: false,
-                  onSubmit: () {
-                    Navigator.pop(context);
-                    _changeStatus(widget.todo.getNextStatusName);
-                  },
-                ),
+                (ref.read(userProvider).isSuperUser &&
+                            widget.todo.getNextStatus == 'Delete') ||
+                        widget.todo.getNextStatus != 'Delete'
+                    ? SlideAction(
+                        innerColor: Theme.of(context).colorScheme.onPrimary,
+                        outerColor:
+                            widget.todo.getNextStatusColor.withOpacity(.7),
+                        text: widget.todo.getNextStatus,
+                        elevation: 0,
+                        sliderButtonIcon: Icon(
+                          widget.todo.getNextStatusIcon,
+                          color: widget.todo.getNextStatusColor.withOpacity(.7),
+                        ),
+                        sliderRotate: false,
+                        onSubmit: () {
+                          Navigator.pop(context);
+                          _changeStatus(widget.todo.getNextStatusName);
+                        },
+                      )
+                    : const SizedBox(),
               ],
             ),
           )
