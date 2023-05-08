@@ -110,10 +110,9 @@ class TodoModelState extends ConsumerState<TodoModel> {
             ],
           ),
           const SizedBox(height: 20),
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.32,
+          Expanded(
+            flex: 4,
             child: ListView(
-              shrinkWrap: true,
               children: [
                 Text(
                   widget.todo.desc,
