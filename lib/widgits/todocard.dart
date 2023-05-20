@@ -20,17 +20,18 @@ class TodoCard extends StatelessWidget {
 
   void _openTodoDetails(context, Todo todo) {
     showModalBottomSheet(
-        context: context,
-        useSafeArea: true,
-        isDismissible: true,
-        enableDrag: true,
-        isScrollControlled: true,
-        backgroundColor: Colors.transparent,
-        builder: (BuildContext bctx) {
-          return TodoModel(
-            todo: todo,
-          );
-        });
+      context: context,
+      useSafeArea: true,
+      isDismissible: true,
+      enableDrag: true,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext bctx) {
+        return TodoModel(
+          todo: todo,
+        );
+      },
+    );
   }
 
   @override

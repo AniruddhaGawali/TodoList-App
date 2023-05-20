@@ -29,7 +29,13 @@ class TodoModelState extends ConsumerState<TodoModel> {
   }
 
   void _changeStatus(TodoStatus status) async {
-    bool isSumbit = await widget.todo.setNewStatus(status);
+    bool isSumbit = false;
+
+    if (status == TodoStatus.delete) {
+      isSumbit = await widget.todo.delete();
+    } else {
+      isSumbit = await widget.todo.setNewStatus(status);
+    }
     if (isSumbit) {
       _scaffoldMessenger.clearSnackBars();
       _scaffoldMessenger.showSnackBar(
@@ -60,96 +66,10 @@ class TodoModelState extends ConsumerState<TodoModel> {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Container(
-            width: double.infinity,
-            alignment: Alignment.center,
-            child: Container(
-              height: 4,
-              width: 40,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(100),
-                color: Theme.of(context).colorScheme.secondary,
-              ),
-              margin: const EdgeInsets.only(bottom: 30, top: 10),
-            ),
+          TodoData(todo: widget.todo),
+          const SizedBox(
+            height: 10,
           ),
-          SizedBox(
-            width: double.infinity,
-            child: Text(
-              widget.todo.text,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                    color: Theme.of(context).colorScheme.secondary,
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            "Due Date: ${DateFormat("yyyy-MM-dd HH:mm:ss").format(widget.todo.formatDueDate)}",
-            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontSize: 20,
-                ),
-          ),
-          Row(
-            children: [
-              Text(
-                'Status: ',
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    color: Theme.of(context).colorScheme.secondary,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-              ),
-              TabletContainer(
-                  color: widget.todo.getColor,
-                  textColor: widget.todo.getColor.withOpacity(.8),
-                  text: _getCapitalizedText(
-                    widget.todo.status.name,
-                  )),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Expanded(
-            flex: 4,
-            child: ListView(
-              children: [
-                Text(
-                  widget.todo.desc,
-                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        color: Theme.of(context).colorScheme.secondary,
-                        fontSize: 15,
-                      ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              TabletContainer(
-                textColor: Theme.of(context).colorScheme.primary,
-                text: _getCapitalizedText(
-                  'Owner: ${widget.todo.owner[0]}',
-                ),
-              ),
-              const SizedBox(width: 5),
-              TabletContainer(
-                textColor: Theme.of(context).colorScheme.primary,
-                text: _getCapitalizedText(
-                  'By: ${widget.todo.name}',
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          TabletContainer(
-            textColor: Theme.of(context).colorScheme.primary,
-            text: _getCapitalizedText(
-              'Send to: ${widget.todo.sendTo}',
-            ),
-          ),
-          const Spacer(),
           Padding(
             padding: const EdgeInsets.only(bottom: 20),
             child: Column(
@@ -170,8 +90,8 @@ class TodoModelState extends ConsumerState<TodoModel> {
                   height: 5,
                 ),
                 (ref.read(userProvider).isSuperUser &&
-                            widget.todo.getNextStatus == 'Delete') ||
-                        widget.todo.getNextStatus != 'Delete'
+                            widget.todo.getNextStatus == 'Archive') ||
+                        widget.todo.getNextStatus != 'Archive'
                     ? SlideAction(
                         innerColor: Theme.of(context).colorScheme.onPrimary,
                         outerColor:
@@ -193,6 +113,118 @@ class TodoModelState extends ConsumerState<TodoModel> {
             ),
           )
         ]),
+      ),
+    );
+  }
+}
+
+class TodoData extends StatelessWidget {
+  final Todo todo;
+  const TodoData({
+    super.key,
+    required this.todo,
+  });
+
+  String _getCapitalizedText(String text) {
+    return text[0].toUpperCase() + text.substring(1);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: double.infinity,
+            alignment: Alignment.center,
+            child: Container(
+              height: 4,
+              width: 40,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(100),
+                color: Theme.of(context).colorScheme.secondary,
+              ),
+              margin: const EdgeInsets.only(bottom: 30, top: 10),
+            ),
+          ),
+          SizedBox(
+            width: double.infinity,
+            child: Text(
+              todo.text,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    color: Theme.of(context).colorScheme.secondary,
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            "Due Date: ${DateFormat("yyyy-MM-dd HH:mm:ss").format(todo.formatDueDate)}",
+            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
+                  fontSize: 20,
+                ),
+          ),
+          Row(
+            children: [
+              Text(
+                'Status: ',
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                    color: Theme.of(context).colorScheme.secondary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
+              ),
+              TabletContainer(
+                  color: todo.getColor,
+                  textColor: todo.getColor.withOpacity(.8),
+                  text: _getCapitalizedText(
+                    todo.status.name,
+                  )),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Expanded(
+            flex: 4,
+            child: ListView(
+              children: [
+                Text(
+                  todo.desc,
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        color: Theme.of(context).colorScheme.secondary,
+                        fontSize: 15,
+                      ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              TabletContainer(
+                textColor: Theme.of(context).colorScheme.primary,
+                text: _getCapitalizedText(
+                  'Owner: ${todo.owner[0]}',
+                ),
+              ),
+              const SizedBox(width: 5),
+              TabletContainer(
+                textColor: Theme.of(context).colorScheme.primary,
+                text: _getCapitalizedText(
+                  'By: ${todo.name}',
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          TabletContainer(
+            textColor: Theme.of(context).colorScheme.primary,
+            text: _getCapitalizedText(
+              'Send to: ${todo.sendTo}',
+            ),
+          ),
+        ],
       ),
     );
   }

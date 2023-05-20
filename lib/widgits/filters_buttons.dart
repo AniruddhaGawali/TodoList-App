@@ -14,10 +14,17 @@ class FilterButtons extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     List<TodoStatus> filter = ref.watch(filterProvider);
+    List<TodoStatus> statusList = TodoStatus.values
+        .where((status) =>
+            status != TodoStatus.delete && status != TodoStatus.archive)
+        .toList();
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        ...TodoStatus.values.map((status) {
+        ...statusList.map((status) {
+          if (status == TodoStatus.delete || status == TodoStatus.archive) {
+            return const Padding(padding: EdgeInsets.zero);
+          }
           return OutlinedButton(
               style: ButtonStyle(
                 overlayColor:

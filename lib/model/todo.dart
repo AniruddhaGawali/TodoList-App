@@ -4,7 +4,7 @@ import 'dart:convert';
 //import package files
 import 'package:http/http.dart' as http;
 
-enum TodoStatus { open, working, done, overdue }
+enum TodoStatus { open, working, done, archive, overdue, delete }
 
 TodoStatus setStatus(String statusg, String dueDate) {
   DateTime dartDateTime = DateTime.parse(dueDate);
@@ -18,8 +18,11 @@ TodoStatus setStatus(String statusg, String dueDate) {
     return TodoStatus.working;
   } else if (statusg == "DONE") {
     return TodoStatus.done;
+  } else if (statusg == 'ARCHIVE') {
+    return TodoStatus.archive;
+  } else {
+    return TodoStatus.open;
   }
-  return TodoStatus.open;
 }
 
 Color getColor(TodoStatus status) {
@@ -32,6 +35,10 @@ Color getColor(TodoStatus status) {
       return Colors.greenAccent;
     case TodoStatus.overdue:
       return Colors.redAccent;
+    case TodoStatus.archive:
+      return Colors.white;
+    default:
+      return Colors.white;
   }
 }
 
@@ -72,6 +79,10 @@ class Todo {
         return Colors.greenAccent;
       case TodoStatus.overdue:
         return Colors.redAccent;
+      case TodoStatus.archive:
+        return Colors.deepOrangeAccent;
+      default:
+        return Colors.blueAccent;
     }
   }
 
@@ -85,6 +96,10 @@ class Todo {
         return TodoStatus.working;
       case TodoStatus.overdue:
         return TodoStatus.open;
+      case TodoStatus.archive:
+        return TodoStatus.done;
+      default:
+        return TodoStatus.open;
     }
   }
 
@@ -95,9 +110,13 @@ class Todo {
       case TodoStatus.working:
         return TodoStatus.done;
       case TodoStatus.done:
-        return TodoStatus.done;
+        return TodoStatus.archive;
       case TodoStatus.overdue:
         return TodoStatus.done;
+      case TodoStatus.archive:
+        return TodoStatus.delete;
+      default:
+        return TodoStatus.open;
     }
   }
 
@@ -108,9 +127,13 @@ class Todo {
       case TodoStatus.working:
         return "Done";
       case TodoStatus.done:
-        return "Delete";
+        return "Archive";
       case TodoStatus.overdue:
         return "Done";
+      case TodoStatus.archive:
+        return "Delete";
+      case TodoStatus.delete:
+        return "Delete";
     }
   }
 
@@ -121,9 +144,13 @@ class Todo {
       case TodoStatus.working:
         return Colors.greenAccent;
       case TodoStatus.done:
-        return Colors.redAccent;
+        return Colors.deepOrangeAccent;
       case TodoStatus.overdue:
         return Colors.greenAccent;
+      case TodoStatus.archive:
+        return Colors.redAccent;
+      default:
+        return Colors.white;
     }
   }
 
@@ -134,10 +161,36 @@ class Todo {
       case TodoStatus.working:
         return Icons.done;
       case TodoStatus.done:
-        return Icons.delete_sharp;
+        return Icons.archive;
       case TodoStatus.overdue:
         return Icons.done;
+      case TodoStatus.archive:
+        return Icons.delete;
+      default:
+        return Icons.delete;
     }
+  }
+
+  Future<bool> delete() async {
+    Map submitData = {
+      '_id': id,
+    };
+
+    http.Response response = await http.delete(
+      Uri.parse(
+          'https://intelligent-gold-production.up.railway.app/delete_todo'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(submitData),
+    );
+
+    Map<String, dynamic> result = jsonDecode(response.body);
+
+    if (result['isSuccess'] == true) {
+      return true;
+    }
+    return false;
   }
 
   Future<bool> setNewStatus(TodoStatus status) async {

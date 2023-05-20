@@ -5,6 +5,7 @@ import 'package:todolist/provider/fliter_provider.dart';
 
 //package files
 import 'package:todolist/provider/user_data_provider.dart';
+import 'package:todolist/screens/archive.dart';
 
 //screens
 import 'package:todolist/screens/login.dart';
@@ -175,6 +176,29 @@ class CustomDrawer extends ConsumerWidget {
                         }).toList()
                       ],
                     ),
+              ListTile(
+                leading: Icon(
+                  Icons.archive,
+                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                ),
+                title: Text(
+                  'Archive',
+                  style: Theme.of(context)
+                      .textTheme
+                      .labelLarge!
+                      .copyWith(fontSize: 18),
+                ),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (BuildContext context) {
+                        return const ArchiveScreen();
+                      },
+                    ),
+                  );
+                },
+              ),
               ListTile(
                 leading: Icon(
                   Icons.settings,

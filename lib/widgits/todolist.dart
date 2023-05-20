@@ -9,6 +9,10 @@ class TodoList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<Todo> todos = this
+        .todos
+        .where((element) => element.status != TodoStatus.archive)
+        .toList();
     return Padding(
       padding: const EdgeInsets.all(10),
       child: Column(

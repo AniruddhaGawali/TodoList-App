@@ -4,12 +4,14 @@ import 'dart:convert';
 //package files
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
+import 'package:todolist/model/todo.dart';
 import 'package:todolist/model/user.dart';
 import 'package:todolist/provider/fliter_provider.dart';
 
 //provider
 import 'package:todolist/provider/user_data_provider.dart';
 import 'package:todolist/provider/todo_provider.dart';
+import 'package:todolist/widgits/add_todo.dart';
 import 'package:todolist/widgits/custom_drawer.dart';
 import 'package:todolist/widgits/filters_buttons.dart';
 import 'package:todolist/widgits/todolist.dart';
@@ -38,6 +40,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     Map<String, dynamic> data = jsonDecode(response.body);
     ref.read(todoProvider.notifier).addAllTask(data['data']);
+  }
+
+  void _addNewTodo() {
+    showModalBottomSheet(
+      context: context,
+      useSafeArea: true,
+      isDismissible: true,
+      enableDrag: true,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext bctx) {
+        return const AddTodo();
+      },
+    );
   }
 
   @override
@@ -85,47 +101,44 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ],
       ),
       body: SingleChildScrollView(
-          child: Column(
-        children: [
-          const SizedBox(
-            height: 20,
-          ),
-          const FilterButtons(),
-          ref
-                  .read(filterProvider.notifier)
-                  .getFilteredTodos(ref.watch(todoProvider))
-                  .isNotEmpty
-              ? TodoList(
-                  todos: ref
-                      .read(filterProvider.notifier)
-                      .getFilteredTodos(ref.watch(todoProvider)))
-              : Center(
-                  child: Column(children: [
-                    Image.network(
-                        "https://img.freepik.com/free-vector/relaxing-home-concept-illustration_114360-1128.jpg?w=1480&t=st=1683480421~exp=1683481021~hmac=dc5360c1d18af237acf74b1086762e0f57c19a0c93161adf51597426d4e2c441"),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Text(
-                      'No Tasks Here',
-                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                  ]),
-                ),
-        ],
-      )),
+        child: Column(
+          children: [
+            const SizedBox(
+              height: 20,
+            ),
+            const FilterButtons(),
+            ref
+                    .read(filterProvider.notifier)
+                    .getFilteredTodos(ref.watch(todoProvider))
+                    .where((element) => element.status != TodoStatus.archive)
+                    .isNotEmpty
+                ? TodoList(
+                    todos: ref
+                        .read(filterProvider.notifier)
+                        .getFilteredTodos(ref.watch(todoProvider)))
+                : Center(
+                    child: Column(children: [
+                      Image.network(
+                          "https://img.freepik.com/free-vector/relaxing-home-concept-illustration_114360-1128.jpg?w=1480&t=st=1683480421~exp=1683481021~hmac=dc5360c1d18af237acf74b1086762e0f57c19a0c93161adf51597426d4e2c441"),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Text(
+                        'No Tasks Here',
+                        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                    ]),
+                  ),
+          ],
+        ),
+      ),
       floatingActionButton: ref.read(userProvider).isSuperUser
           ? FloatingActionButton(
               onPressed: () {
-                ScaffoldMessenger.of(context).clearSnackBars();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Under Development'),
-                  ),
-                );
+                _addNewTodo();
               },
               backgroundColor: Theme.of(context).colorScheme.primaryContainer,
               disabledElevation: 0,

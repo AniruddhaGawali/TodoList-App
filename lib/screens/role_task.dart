@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:todolist/model/todo.dart';
-import 'package:todolist/model/user.dart';
 
 import 'package:todolist/widgits/filters_buttons.dart';
 import 'package:todolist/widgits/todolist.dart';
